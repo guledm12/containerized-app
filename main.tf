@@ -9,22 +9,22 @@ variable "prefix" {
 
 terraform {
   required_providers {
-    azurem = {
-      source  = "hashicorp/azurerm"
-      version = "3.0.0"
-    }
+    azurerm = {}
   }
+  required_version = ">= 1.0"
 }
-provider   "azurerm"   { 
-  version   =   "= 3.39.1" 
-  features   {} 
-} 
+provider "azurerm" {
+  features {}
+}
 
+resource "random_integer" "sa_id" {
+  min = 1000
+  max = 9999
+}
 resource "azurerm_resource_group" "rg" {
-  name     = "tfdemo-rg"
+  name     = "containerized-app"
   location = var.location
 }
-
 resource "azurerm_storage_account" "sa" {
   name                     = "${var.prefix}stgacct${random_integer.sa_id.id}"
   resource_group_name      = azurerm_resource_group.rg.name
@@ -36,3 +36,5 @@ resource "azurerm_storage_account" "sa" {
 output "sa_name" {
   value = azurerm_storage_account.sa.name
 }
+
+#sa_name = "4sysopsstgacct6365"
