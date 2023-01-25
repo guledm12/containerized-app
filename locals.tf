@@ -1,6 +1,6 @@
 locals {
   tags = {
-    "com.thorstenhans.provisioner" = "terraform"
-    "com.thorstenhans.responsible" = "gmohamed@kinaxis.com"
+    "com.gmohamed.provisioner" = "terraform"
+    "com.gmohamed.responsible" = "gmohamed@kinaxis.com"
   }
 }
