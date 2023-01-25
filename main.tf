@@ -7,6 +7,7 @@ variable "containerized_apps" {
   type = list(object({
     image = string
     name = string
+    tag = string
     containerPort = number
     ingress_enabled = bool
     min_replicas = number
@@ -17,7 +18,8 @@ variable "containerized_apps" {
 
   default = [{
    image = "gmohamed/app"
-   name = "app1"
+   name = "application1"
+   tag = "app1"
    containerPort = 80
    ingress_enabled = true
    min_replicas = 1
@@ -27,7 +29,8 @@ variable "containerized_apps" {
   },
   {
    image = "gmohamed/app"
-   name = "app2"
+   name = "application2"
+   tag = "app2"
    containerPort = 80
    ingress_enabled = true
    min_replicas = 1
@@ -58,6 +61,7 @@ provider "azapi" {
 resource "azurerm_resource_group" "rg" {
   name     = "containerized-app"
   location = var.location
+  tags     = local.tags
 }
 
 resource "azurerm_log_analytics_workspace" "law" {
@@ -66,4 +70,5 @@ resource "azurerm_log_analytics_workspace" "law" {
   location            = azurerm_resource_group.rg.location
   sku                 = "PerGB2018"
   retention_in_days   = 30
+  tags                = local.tags
 }

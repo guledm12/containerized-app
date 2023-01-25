@@ -3,6 +3,7 @@ resource "azapi_resource" "aca_env" {
   parent_id = azurerm_resource_group.rg.id
   location  = azurerm_resource_group.rg.location
   name      = "aca-env-terraform-containerized-app"
+  tags      = local.tags
   
   body = jsonencode({
     properties = {
@@ -37,7 +38,7 @@ resource "azapi_resource" "aca" {
         containers = [
           {
             name = "main"
-            image = "${each.value.image}"
+            image = "${each.value.image}:${each.value.tag}"
             resources = {
               cpu = each.value.cpu_requests
               memory = each.value.mem_requests
@@ -51,4 +52,6 @@ resource "azapi_resource" "aca" {
       }
     }
   })
+   
+  tags      = local.tags
 }
