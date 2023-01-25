@@ -1,6 +1,6 @@
 variable "location" {
   type    = string
-  default = "Canada Central"
+  default = "East US"
 }
 
 variable "containerized_apps" {
