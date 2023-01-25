@@ -1,40 +1,69 @@
 variable "location" {
   type    = string
-  default = "Canada East"
-}
-variable "prefix" {
-  type    = string
-  default = "4sysops"
+  default = "Canada Central"
 }
 
+variable "containerized_apps" {
+  type = list(object({
+    image = string
+    name = string
+    containerPort = number
+    ingress_enabled = bool
+    min_replicas = number
+    max_replicas = number
+    cpu_requests = number
+    mem_requests = string
+  }))
+
+  default = [{
+   image = "gmohamed/app"
+   name = "app1"
+   containerPort = 80
+   ingress_enabled = true
+   min_replicas = 1
+   max_replicas = 2
+   cpu_requests = 0.5
+   mem_requests = "1.0Gi"
+  },
+  {
+   image = "gmohamed/app"
+   name = "app2"
+   containerPort = 80
+   ingress_enabled = true
+   min_replicas = 1
+   max_replicas = 2
+   cpu_requests = 0.5
+   mem_requests = "1.0Gi"
+  }] 
+}
 terraform {
   required_providers {
-    azurerm = {}
+    azurerm = {
+    }
+    azapi = {
+      source = "Azure/azapi"
+      version = "~>0.4.0"
+    }
   }
   required_version = ">= 1.0"
 }
+
 provider "azurerm" {
   features {}
 }
 
-resource "random_integer" "sa_id" {
-  min = 1000
-  max = 9999
+provider "azapi" {
 }
+
 resource "azurerm_resource_group" "rg" {
   name     = "containerized-app"
   location = var.location
 }
-resource "azurerm_storage_account" "sa" {
-  name                     = "${var.prefix}stgacct${random_integer.sa_id.id}"
-  resource_group_name      = azurerm_resource_group.rg.name
-  location                 = azurerm_resource_group.rg.location
-  account_replication_type = "LRS"
-  account_tier             = "Standard"
-}
 
-output "sa_name" {
-  value = azurerm_storage_account.sa.name
+resource "azurerm_log_analytics_workspace" "law" {
+  name                = "law-aca-terraform-containerized-app"
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+  sku                 = "PerGB2018"
+  retention_in_days   = 30
 }
-
-#sa_name = "4sysopsstgacct6365"
